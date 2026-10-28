@@ -42,6 +42,28 @@ Each context has its own small model; they share no classes. Storage is in-memor
 adapters that mimic a database: a transaction works on a copy of the tables, which commit
 keeps and rollback throws away. PostgreSQL comes with chapter 8.
 
+## The ticket's rules
+
+The `Ticket` aggregate follows the book's listings 06-08 to 06-17 for its shape, and the
+ticket policies of the TypeScript `eventually-wolfdesk` for its rules:
+
+- Only the customer or the assigned agent writes messages; only a message's receiver can
+  acknowledge it.
+- The customer can request an escalation only after the response deadline, and only once.
+- A missed deadline escalates the ticket automatically.
+- An escalated ticket with less than half its time left and unread messages for its agent
+  goes to another agent (listing 06-13).
+- The response deadline counts the agent's working time only, from the shift schedule
+  (listing 06-18, a domain service).
+- Saving a ticket that changed since it was loaded fails (optimistic concurrency, listings
+  06-10 to 06-12).
+
+## Credits
+
+The ticket's rules follow `wolfdesk/eventually-wolfdesk`, MIT License, Copyright (c) 2021
+Vladik Khononov; its license is in `THIRD-PARTY-LICENSE-eventually-wolfdesk`. The code here
+is written from scratch in Java; nothing is translated line by line.
+
 ## Run it with
 
 ```bash
