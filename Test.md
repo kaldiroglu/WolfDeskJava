@@ -4,7 +4,7 @@
 
 All tests are unit tests (JUnit 5), under `src/test/java`, run with `mvn test`. They use
 the in-memory adapters, so they need no database. There are no integration or end-to-end
-tests yet; those come with PostgreSQL in chapter 8.
+tests: every adapter is in memory.
 
 ## billing (transaction script)
 
@@ -33,7 +33,8 @@ tests yet; those come with PostgreSQL in chapter 8.
   shifts only, applies the escalation factor, and fails when the shifts do not cover the
   response time.
 - `InMemoryTicketRepositoryTest` — each save increments the version; a ticket changed since
-  it was loaded is not saved.
+  it was loaded is not saved; every save takes the next checkpoint, and a ticket saved
+  twice is one change at its latest checkpoint.
 - `TicketServiceTest` — events are published after the save; the agent's deadline comes
   from the domain service; a concurrent change and a rejected escalation are reported as
   failures, not thrown.
@@ -54,6 +55,17 @@ tests yet; those come with PostgreSQL in chapter 8.
 
 The event-sourced tests were checked against two broken versions (the event store's
 version check removed; `TicketEscalated` not projected): both were caught.
+
+## ticketing.readmodels (CQRS)
+
+- `AgentQueueProjectionTest` — an assigned ticket appears in its agent's queue, earliest
+  deadline first; the queue changes only when the projection catches up; a catch-up reads
+  only the changes after its checkpoint; a closed ticket leaves the queue; a reassigned
+  ticket moves to the new agent's queue; a reset projection rebuilds the same queues; a
+  projection added later sees every ticket.
+
+The projection tests were checked against two broken projections (closed tickets kept;
+checkpoint not stored): both were caught.
 
 The concurrency tests were checked against a deliberately broken repository (version check
 removed): two of them failed, as they should.

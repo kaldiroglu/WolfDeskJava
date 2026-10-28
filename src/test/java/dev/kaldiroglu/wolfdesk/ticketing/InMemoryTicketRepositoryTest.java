@@ -42,6 +42,29 @@ class InMemoryTicketRepositoryTest {
     }
 
     @Test
+    void everySaveTakesTheNextCheckpoint() {
+        var first = newTicket();
+        var second = newTicket();
+        repository.save(first);
+        repository.save(second);
+
+        var checkpoints = repository.changesAfter(0).stream().map(c -> c.checkpoint()).toList();
+        assertEquals(List.of(1L, 2L), checkpoints);
+    }
+
+    @Test
+    void aTicketSavedTwiceIsOneChangeAtItsLatestCheckpoint() {
+        var ticket = newTicket();
+        repository.save(ticket);
+        repository.save(repository.load(ticket.id()));
+
+        var changes = repository.changesAfter(0);
+        assertEquals(1, changes.size());
+        assertEquals(2L, changes.getFirst().checkpoint());
+        assertEquals(List.of(), repository.changesAfter(2));
+    }
+
+    @Test
     void anUnknownTicketIsNotFound() {
         assertThrows(TicketNotFoundException.class, () -> repository.load(TicketId.random()));
     }
