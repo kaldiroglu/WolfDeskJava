@@ -27,8 +27,8 @@ passes.
 - One code base that shows each of the book's business logic and architectural patterns in
   the bounded context where the book would use it.
 - The same design in Java and C#, so participants work in their own language.
-- Tags by chapter (`stage-ch05`, `stage-ch06`, …), so a slide can point to the code as it
-  stood at that chapter.
+- Tags by chapter (`stage-ch05`, `stage-ch06`, `stage-ch07`, …), so a slide can point to
+  the code as it stood at that chapter.
 
 ## Bounded contexts and their patterns
 
@@ -37,6 +37,7 @@ passes.
 | `billing` | Transaction script | 5 | Records opened tickets and charges a tenant per period with the volume discount |
 | `tenants` | Active record | 5 | A tenant with its ticket categories and supported products |
 | `ticketing` | Domain model | 6 | The `Ticket` aggregate: messages, assignment, escalation, reassignment, closing |
+| `ticketing.eventsourced` | Event-sourced domain model | 7 | The same ticket, its state rebuilt from its events |
 
 Each context has its own small model; they share no classes. Storage is in-memory
 adapters that mimic a database: a transaction works on a copy of the tables, which commit
@@ -57,6 +58,26 @@ ticket policies of the TypeScript `eventually-wolfdesk` for its rules:
   (listing 06-18, a domain service).
 - Saving a ticket that changed since it was loaded fails (optimistic concurrency, listings
   06-10 to 06-12).
+
+## The event-sourced ticket
+
+`ticketing.eventsourced` implements the same `Ticket` aggregate as an event-sourced domain
+model (chapter 7, pp. 108–110). It has the same commands and rules; only the way its state
+is persisted differs:
+
+- No state is stored. `EventStore` keeps each ticket's events, append-only: it can fetch a
+  ticket's events and append new ones, nothing else.
+- `new Ticket(events)` rehydrates the ticket: `TicketState` projects the events, oldest
+  first, into the current state. A command that passes the rules appends a new event, and
+  the event changes the state through the same projection.
+- `TicketService` follows the book's script: load the events, rehydrate, execute one
+  command, append the new events at the version the ticket was loaded at. If other events
+  were appended since, the append fails (optimistic concurrency).
+- The events are the source of truth, so they carry everything: the title, the response
+  timeframe, the message body. Chapter 6's events do not; they were never meant to rebuild
+  a ticket.
+- `loadAt(id, version)` rebuilds a ticket as it was at an earlier version, and
+  `TicketAnalysisProjection` projects the same events into a second model for analysis.
 
 ## Credits
 

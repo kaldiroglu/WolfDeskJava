@@ -38,5 +38,22 @@ tests yet; those come with PostgreSQL in chapter 8.
   from the domain service; a concurrent change and a rejected escalation are reported as
   failures, not thrown.
 
+## ticketing.eventsourced (event-sourced domain model)
+
+- `EventSourcedTicketTest` — a command appends an event instead of changing a field; a
+  ticket is rebuilt from its events; the version is the number of the last event; an
+  earlier state is projected from the first events; a rejected command appends no event;
+  a rebuilt ticket keeps its rules; an escalated ticket with unread messages is
+  reassigned; a closed ticket takes no more commands.
+- `InMemoryEventStoreTest` — events are fetched in the order they were appended; an append
+  based on a stale version fails; an earlier fetch is not changed by later appends.
+- `EventSourcedTicketServiceTest` — every change is kept in the event store; the agent's
+  deadline is in the assigned event; a concurrent append is reported as a failure; the
+  ticket at an earlier version is rebuilt from its first events; a new projection reads
+  the whole history.
+
+The event-sourced tests were checked against two broken versions (the event store's
+version check removed; `TicketEscalated` not projected): both were caught.
+
 The concurrency tests were checked against a deliberately broken repository (version check
 removed): two of them failed, as they should.
