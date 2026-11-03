@@ -73,26 +73,71 @@ keeps and rollback throws away.
 
 ## Architecture
 
-Each module has the architecture its business logic needs (chapter 8):
+### One architecture per module
 
-- `billing` and `tenants` are layered, one package per layer, named with the book's
-  original terms (p. 124). Each layer depends only on the layer beneath it (p. 120):
+Each module has the architecture its business logic needs (chapter 8). The book warns:
+"Enforcing a single, bounded, context-wide architecture will inadvertently lead to
+accidental complexity" (p. 134).
 
-  | Package | Layer | Classes |
-  |---|---|---|
-  | `billing.presentation` | Presentation | `TicketingAnticorruptionLayer`: a subscription to ticketing's messages (p. 119) |
-  | `billing.businesslogic` | Business logic, and service layer | The transaction scripts `RecordTicketOpened` and `ChargeTenant`, and `VolumeDiscount` |
-  | `billing.dataaccess` | Data access | `BillingDatabase`, `ProductOwners`, the `Invoice` and `TenantId` they store, and their in-memory implementations |
-  | `tenants.service` | Service | The transaction scripts `RegisterTenant` and `AddSupportedProduct` |
-  | `tenants.businesslogic` | Business logic | The active records `Tenant` and `Product` |
-  | `tenants.dataaccess` | Data access | `TenantsDatabase` |
+| Module | Business logic (chapters 5–7) | Architecture (chapter 8) | Why |
+|---|---|---|---|
+| `billing` | Transaction script | Layered | A good fit for transaction scripts and active records (p. 124) |
+| `tenants` | Active record | Layered, with a service layer | The same; active records need a service layer to orchestrate them (p. 124) |
+| `ticketing` | Domain model, event-sourced domain model | Ports & adapters | A layered architecture "makes it challenging to implement a domain model" (p. 125) |
+| `ticketing.readmodels` | — | CQRS | The agents' queues: a second model of the same tickets |
 
-  Billing has no separate service layer: a transaction script "essentially is a service
-  layer" (p. 124). Tenants needs one, because active records need external orchestration
-  (p. 124). Its scripts start, commit and roll back the transaction themselves, as the
-  book's `UserService.Create` does (p. 123), and otherwise work through the active records.
-  Tenants has no presentation layer: the tests and the demo call the service layer.
-  `LayeredArchitectureTest` checks each layer's imports.
+The packages show the architecture: billing and tenants have one package per layer,
+ticketing one package per role.
+
+### Layered: billing and tenants
+
+The packages are named with the book's original terms (p. 124):
+
+| Package | Layer | Classes |
+|---|---|---|
+| `billing.presentation` | Presentation | `TicketingAnticorruptionLayer`: a subscription to ticketing's messages (p. 119) |
+| `billing.businesslogic` | Business logic, and service layer | The transaction scripts `RecordTicketOpened` and `ChargeTenant`, and `VolumeDiscount` |
+| `billing.dataaccess` | Data access | `BillingDatabase`, `ProductOwners`, the `Invoice` and `TenantId` they store, and their in-memory implementations |
+| `tenants.service` | Service | The transaction scripts `RegisterTenant` and `AddSupportedProduct` |
+| `tenants.businesslogic` | Business logic | The active records `Tenant` and `Product` |
+| `tenants.dataaccess` | Data access | `TenantsDatabase` |
+
+The rules, and how the code keeps them:
+
+- **Each layer depends only on the layer beneath it** (p. 120). The presentation layer
+  calls the business logic, the business logic calls data access, and data access depends
+  on no other layer. Billing's presentation layer also reads ticketing's published
+  language: those are the messages it receives.
+- **Billing has no separate service layer.** A transaction script "essentially is a
+  service layer" (p. 124); a service layer over it would only repeat its methods.
+- **Tenants needs one**, because active records need external orchestration (p. 124).
+  `RegisterTenant` and `AddSupportedProduct` start, commit and roll back the transaction
+  themselves, as the book's `UserService.Create` does (p. 123): this is the one call from
+  the service layer straight into data access, and it is limited to the transaction.
+  Everything else goes through the active records.
+- **Tenants has no presentation layer**: no endpoint and no subscription, only the tests
+  and the demo call its service layer.
+- **The anticorruption layer only translates.** Billing needs the tenant of a ticket's
+  product. The lookup reads data access, so it is in the transaction script
+  `RecordTicketOpened`, not in the anticorruption layer: a presentation layer that read
+  `ProductOwners` itself would skip the business logic layer.
+- **The database interface belongs to data access.** `BillingDatabase` is an interface,
+  but it sits in `billing.dataaccess` with its implementation, and the business logic
+  depends on it there: in a layered architecture, the business logic layer depends on the
+  layer beneath. Ports & adapters, below, reverses that relationship, by the dependency
+  inversion principle (p. 126): the business logic layer defines the ports, and the
+  infrastructure implements them (p. 127).
+- **The data access layer stores plain records.** `Invoice` and `TenantId` are in
+  `billing.dataaccess`, because the database reads and writes them and data access may not
+  depend on the layer above.
+- `TenantsDatabase` exposes its rows and table operations as `public`, because the active
+  records that use them are in another package.
+
+`LayeredArchitectureTest` checks each layer's imports, and that tenants' service layer calls
+only `startTransaction`, `commit` and `rollback` on the database.
+
+### Ports & adapters: ticketing
+
 - `ticketing` is ports & adapters, one package per role. The business logic layer
   defines the ports (chapter 8, p. 127): `TicketRepository`, `Outbox` and
   `DepartmentRepository` are in `ticketing.domain`, and `ticketing.inmemory` holds the
@@ -103,17 +148,30 @@ Each module has the architecture its business logic needs (chapter 8):
   application layer.
 - `Message` stays in `ticketing.domain` with `Ticket`: its constructor and `markAsRead` are
   package-private, so a message changes only through its ticket.
-- The tags up to `stage-ch09` keep the earlier layout, with these classes directly in
-  `ticketing`, `billing` and `tenants`; the decks quote the code at those tags.
 - `ticketing.eventsourced` is ports & adapters too: `EventStore` is its port, and
   `InMemoryEventStore` in `ticketing.inmemory` its adapter.
-- `ticketing.readmodels` adds CQRS: the `Ticket` aggregate is the command execution model,
-  and `AgentQueueProjection` projects the saved tickets into each agent's queue. Each
-  catch-up reads the tickets saved after its last checkpoint, which the repository stamps on
-  every save, like a `rowversion` column. Resetting the checkpoint rebuilds the queues.
-- Ticketing and billing communicate through messages (chapter 9): ticketing's `Outbox` is a
-  port, `OutboxRelay` publishes through the `EventPublisher` port, and billing's
-  `TicketingAnticorruptionLayer` subscribes. `TicketingToBillingTest` wires the two.
+
+### CQRS: the agents' queues
+
+`ticketing.readmodels` adds CQRS: the `Ticket` aggregate is the command execution model,
+and `AgentQueueProjection` projects the saved tickets into each agent's queue. Each
+catch-up reads the tickets saved after its last checkpoint, which the repository stamps on
+every save, like a `rowversion` column. Resetting the checkpoint rebuilds the queues.
+
+### Between the contexts
+
+Ticketing and billing communicate through messages (chapter 9): ticketing's `Outbox` is a
+port, `OutboxRelay` publishes through the `EventPublisher` port, and billing's
+`TicketingAnticorruptionLayer`, its presentation layer, subscribes.
+`TicketingToBillingTest` wires the two. Tenants and billing share no classes: billing keeps
+its own `TenantId` and its own table of product owners.
+
+### The layout at the tags
+
+The tags up to `stage-ch09` keep the earlier layout, with these classes directly in
+`ticketing`, `billing` and `tenants`; the decks quote the code at those tags. The tag
+`stage-ch09-layered` is the first with billing and tenants one package per layer; decks 08
+and 09 quote billing and tenants there.
 
 ## The ticket's rules
 
