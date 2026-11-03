@@ -7,6 +7,7 @@ import dev.kaldiroglu.wolfdesk.ticketing.domain.ResponseTimeframeCalculationServ
 import dev.kaldiroglu.wolfdesk.ticketing.domain.Shift;
 import dev.kaldiroglu.wolfdesk.ticketing.domain.Ticket;
 import dev.kaldiroglu.wolfdesk.ticketing.domain.TicketId;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.TicketRepository;
 import dev.kaldiroglu.wolfdesk.ticketing.domain.UserId;
 import dev.kaldiroglu.wolfdesk.ticketing.domain.events.TicketAssigned;
 import dev.kaldiroglu.wolfdesk.ticketing.inmemory.InMemoryDepartmentRepository;

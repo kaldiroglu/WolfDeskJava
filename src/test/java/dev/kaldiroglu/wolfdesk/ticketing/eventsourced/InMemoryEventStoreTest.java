@@ -1,6 +1,6 @@
 package dev.kaldiroglu.wolfdesk.ticketing.eventsourced;
 
-import dev.kaldiroglu.wolfdesk.ticketing.application.ConcurrencyException;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.ConcurrencyException;
 import dev.kaldiroglu.wolfdesk.ticketing.domain.Priority;
 import dev.kaldiroglu.wolfdesk.ticketing.domain.ProductId;
 import dev.kaldiroglu.wolfdesk.ticketing.domain.TicketId;

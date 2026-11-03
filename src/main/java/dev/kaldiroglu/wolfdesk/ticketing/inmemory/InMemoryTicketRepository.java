@@ -1,12 +1,12 @@
 package dev.kaldiroglu.wolfdesk.ticketing.inmemory;
 
-import dev.kaldiroglu.wolfdesk.ticketing.application.ConcurrencyException;
-import dev.kaldiroglu.wolfdesk.ticketing.application.Outbox;
-import dev.kaldiroglu.wolfdesk.ticketing.application.OutboxRecord;
-import dev.kaldiroglu.wolfdesk.ticketing.application.TicketNotFoundException;
-import dev.kaldiroglu.wolfdesk.ticketing.application.TicketRepository;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.ConcurrencyException;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.Outbox;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.OutboxRecord;
 import dev.kaldiroglu.wolfdesk.ticketing.domain.Ticket;
 import dev.kaldiroglu.wolfdesk.ticketing.domain.TicketId;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.TicketNotFoundException;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.TicketRepository;
 import dev.kaldiroglu.wolfdesk.ticketing.domain.events.DomainEvent;
 import dev.kaldiroglu.wolfdesk.ticketing.readmodels.TicketChange;
 import dev.kaldiroglu.wolfdesk.ticketing.readmodels.TicketChangeFeed;

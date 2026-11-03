@@ -1,5 +1,7 @@
 package dev.kaldiroglu.wolfdesk.ticketing.application;
 
+import dev.kaldiroglu.wolfdesk.ticketing.domain.Outbox;
+
 /**
  * The publishing relay of the outbox pattern, pull-based (chapter 9, pp. 145–146): it reads
  * the unpublished events, publishes their public versions, and marks them as published.

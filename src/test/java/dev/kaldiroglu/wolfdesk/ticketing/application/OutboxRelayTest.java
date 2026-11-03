@@ -1,5 +1,7 @@
 package dev.kaldiroglu.wolfdesk.ticketing.application;
 
+import dev.kaldiroglu.wolfdesk.ticketing.domain.Outbox;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.OutboxRecord;
 import dev.kaldiroglu.wolfdesk.ticketing.domain.Priority;
 import dev.kaldiroglu.wolfdesk.ticketing.domain.ProductId;
 import dev.kaldiroglu.wolfdesk.ticketing.domain.ResponseTimeframe;

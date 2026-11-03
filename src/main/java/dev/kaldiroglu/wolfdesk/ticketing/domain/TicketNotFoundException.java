@@ -1,6 +1,4 @@
-package dev.kaldiroglu.wolfdesk.ticketing.application;
-
-import dev.kaldiroglu.wolfdesk.ticketing.domain.TicketId;
+package dev.kaldiroglu.wolfdesk.ticketing.domain;
 
 public class TicketNotFoundException extends RuntimeException {
 

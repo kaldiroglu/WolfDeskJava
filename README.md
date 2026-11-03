@@ -37,7 +37,7 @@ passes.
 | `billing` | Transaction script | 5 | Records opened tickets and charges a tenant per period with the volume discount |
 | `tenants` | Active record | 5 | A tenant with its ticket categories and supported products |
 | `ticketing.domain` | Domain model | 6 | The `Ticket` aggregate: messages, assignment, escalation, reassignment, closing; its commands in `domain.commands`, its domain events in `domain.events` |
-| `ticketing.application` | Application service | 6 | `TicketService`, the ports it needs, and the outbox relay |
+| `ticketing.application` | Application service | 6 | `TicketService`, the outbox relay and its event publisher port |
 | `ticketing.eventsourced` | Event-sourced domain model | 7 | The same ticket, its state rebuilt from its events |
 | `ticketing.readmodels` | CQRS | 8 | The agents' queues, projected from the saved tickets |
 | `ticketing.publishedlanguage` | Published language | 9 | The public messages ticketing publishes through its outbox |
@@ -55,12 +55,14 @@ Each module has the architecture its business logic needs (chapter 8):
   are its service layer.
 - `billing` is transaction scripts, which are a service layer already; they work on the
   database through the `BillingDatabase` interface.
-- `ticketing` is ports & adapters, one package per role. The domain model
-  (`ticketing.domain`) and the application service (`ticketing.application`) define the
-  ports they need — `DepartmentRepository` in the domain, used by its domain service;
-  `TicketRepository`, `Outbox` and `EventPublisher` in the application layer — and
-  `ticketing.inmemory` holds the adapters. No production code outside it imports an
-  adapter, and the domain imports nothing from the application layer.
+- `ticketing` is ports & adapters, one package per role. The business logic layer
+  defines the ports (chapter 8, p. 127): `TicketRepository`, `Outbox` and
+  `DepartmentRepository` are in `ticketing.domain`, and `ticketing.inmemory` holds the
+  adapters. The one port in `ticketing.application` is `EventPublisher`: it publishes the
+  published language, not the domain's events, and only the outbox relay uses it, so the
+  domain stays independent of the published language. Only `inmemory` and the demo, the
+  composition root, import an adapter, and the domain imports nothing from the
+  application layer.
 - `Message` stays in `ticketing.domain` with `Ticket`: its constructor and `markAsRead` are
   package-private, so a message changes only through its ticket.
 - The tags up to `stage-ch09` keep the earlier layout, with these classes directly in

@@ -1,13 +1,13 @@
 package dev.kaldiroglu.wolfdesk.ticketing.eventsourced;
 
-import dev.kaldiroglu.wolfdesk.ticketing.application.ConcurrencyException;
 import dev.kaldiroglu.wolfdesk.ticketing.application.ExecutionResult;
-import dev.kaldiroglu.wolfdesk.ticketing.application.TicketNotFoundException;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.ConcurrencyException;
 import dev.kaldiroglu.wolfdesk.ticketing.domain.MessageId;
 import dev.kaldiroglu.wolfdesk.ticketing.domain.Priority;
 import dev.kaldiroglu.wolfdesk.ticketing.domain.ProductId;
 import dev.kaldiroglu.wolfdesk.ticketing.domain.ResponseTimeframeCalculationService;
 import dev.kaldiroglu.wolfdesk.ticketing.domain.TicketId;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.TicketNotFoundException;
 import dev.kaldiroglu.wolfdesk.ticketing.domain.TicketRuleViolationException;
 import dev.kaldiroglu.wolfdesk.ticketing.domain.UserId;
 import dev.kaldiroglu.wolfdesk.ticketing.domain.commands.AcknowledgeMessage;

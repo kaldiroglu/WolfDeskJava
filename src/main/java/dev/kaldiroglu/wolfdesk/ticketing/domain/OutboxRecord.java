@@ -1,4 +1,4 @@
-package dev.kaldiroglu.wolfdesk.ticketing.application;
+package dev.kaldiroglu.wolfdesk.ticketing.domain;
 
 import dev.kaldiroglu.wolfdesk.ticketing.domain.events.DomainEvent;
 

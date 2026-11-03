@@ -1,7 +1,4 @@
-package dev.kaldiroglu.wolfdesk.ticketing.application;
-
-import dev.kaldiroglu.wolfdesk.ticketing.domain.Ticket;
-import dev.kaldiroglu.wolfdesk.ticketing.domain.TicketId;
+package dev.kaldiroglu.wolfdesk.ticketing.domain;
 
 /**
  * Loads and saves tickets, one per transaction. {@link #save} uses optimistic concurrency:
