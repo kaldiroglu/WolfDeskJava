@@ -83,5 +83,11 @@ These tests were checked against four broken versions (the relay never marking a
 the events written before the version check; billing's idempotency check removed; a private
 event published): all four were caught.
 
+## The demo
+
+- `WolfDeskDemoTest` — the demo runs to the end: the deadline it prints is the one the
+  domain service calculated, the early escalation is refused, the later one succeeds, billing
+  counts no ticket before the relay runs and one after, and the invoice charges one ticket.
+
 The concurrency tests were checked against a deliberately broken repository (version check
 removed): two of them failed, as they should.

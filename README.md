@@ -129,6 +129,14 @@ Chapter 9's patterns connect ticketing to billing (pp. 137–147):
   it finds the tenant from the ticket's product and calls `RecordTicketOpened`, which
   counts a ticket once however often the message arrives.
 
+## The demo
+
+`dev.kaldiroglu.wolfdesk.demo.WolfDeskDemo` runs one story through the three bounded
+contexts and prints each step: a tenant registers a product, a customer opens a ticket, an
+early escalation is refused and a later one succeeds, the agent closes the ticket, the
+outbox relay publishes, and billing charges the tenant. It is the composition root: the
+only class that wires the contexts to their in-memory adapters. No database is needed.
+
 ## Credits
 
 The ticket's rules follow `wolfdesk/eventually-wolfdesk`, MIT License, Copyright (c) 2021
@@ -138,6 +146,7 @@ is written from scratch in Java; nothing is translated line by line.
 ## Run it with
 
 ```bash
+mvn compile exec:java     # the demo
 mvn test                  # all tests
 mvn -Dtest=ChargeTenantTest test   # one test class
 ```
