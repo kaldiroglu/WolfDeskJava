@@ -235,6 +235,43 @@ early escalation is refused and a later one succeeds, the agent closes the ticke
 outbox relay publishes, and billing charges the tenant. It is the composition root: the
 only class that wires the contexts to their in-memory adapters. No database is needed.
 
+## The code at each chapter's tag
+
+Each chapter's code has a tag: `stage-ch05`, `stage-ch06`, `stage-ch07`, `stage-ch08`,
+`stage-ch09`, and `stage-ch09-layered`, which puts billing and tenants in one package per
+layer. The decks quote the code at these tags. In IntelliJ IDEA:
+
+**Switch the whole project to a tag**, to run or browse a chapter's code:
+
+1. Click the branch name in the toolbar (it shows `main`), or choose **Git → Branches…**.
+2. Type the tag's name, such as `stage-ch08`; tags are listed in their own **Tags** group.
+3. Select the tag and choose **Checkout**.
+
+The editor, the project tree, Run and the tests now use that chapter's code. IntelliJ says
+the repository is in a "detached HEAD" state: normal for a tag, so read and run the code,
+but do not commit there. Reload Maven if asked. To come back, pick `main` in the same
+popup and choose **Checkout**.
+
+**See how the code changed between tags**, without a checkout:
+
+- One file: right-click it and choose **Git → Compare with Branch or Tag…**, then pick the
+  tag.
+- The whole project: in the branches popup, select a tag and choose **Compare with
+  Current**. Each changed file opens in a side-by-side diff. For example, compare
+  `stage-ch09` with `stage-ch09-layered` to see the layers of billing and tenants.
+
+**Browse the history:** in the **Git** tool window, the **Log** tab shows each tag as a label
+on its commit. Select a commit to see the files it changed; right-click a file and choose
+**Open Repository Version** to see it as it was then.
+
+**Two chapters open side by side:** check a tag out into a second directory with a git
+worktree, and open that directory as a second project:
+
+```
+git worktree add ../WolfDeskJava-ch08 stage-ch08
+git worktree remove ../WolfDeskJava-ch08     # when you no longer need it
+```
+
 ## Credits
 
 The ticket's rules follow `wolfdesk/eventually-wolfdesk`, MIT License, Copyright (c) 2021
