@@ -10,8 +10,33 @@ code, so every snippet on a slide is compiled and tested. The C# version is
 `WolfDeskCSharp`.
 
 - **Project:** WolfDesk, Java version, started on 2026-10-28.
-- **Stack:** Java 25, Maven, JUnit 5. No framework in the domain.
+- **Stack:** Java 25, Maven, JUnit 5. No framework.
 - **Root package:** `dev.kaldiroglu.wolfdesk`.
+
+## What WolfDesk is, and what it is not
+
+- **A library with a demo.** The three bounded contexts are used in process. Each one's
+  public interface is its application layer: `TicketService` in ticketing, `RegisterTenant`
+  and `AddSupportedProduct` in tenants, `RecordTicketOpened` and `ChargeTenant` in billing.
+  Other bounded contexts read ticketing's published language, which the outbox relay
+  publishes.
+- **One program: the demo.** `WolfDeskDemo` runs one story through the three contexts
+  (`mvn compile exec:java`). Apart from it, the tests are the only callers.
+- **No network API and no user interface.** There are no HTTP endpoints and no
+  connection to a real message bus: billing subscribes to ticketing's messages through the
+  in-memory bus, in the same process. In chapter 8's terms, WolfDesk has driven adapters,
+  for storage and the message bus, and no driving adapter.
+- **No database.** Every adapter keeps its data in memory and behaves like a database:
+  tenants and billing have transactions, the ticket repository has optimistic concurrency,
+  and the ticket's save writes its events to the outbox in the same transaction. Nothing
+  needs Docker.
+- **No dependencies but JUnit**, which only the tests use.
+
+These are deliberate: the code stays about the domain model, and the in-memory adapters
+show transactions, concurrency and the outbox without infrastructure to install.
+`WolfDeskScopeTest` fails if the code stops matching this list: a dependency other than
+JUnit, an import outside the project and the standard library's `java.io`, `java.math`,
+`java.time` and `java.util`, or a program other than the demo.
 
 ## The business
 

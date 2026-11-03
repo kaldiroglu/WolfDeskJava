@@ -83,6 +83,14 @@ These tests were checked against four broken versions (the relay never marking a
 the events written before the version check; billing's idempotency check removed; a private
 event published): all four were caught.
 
+## What WolfDesk is
+
+- `WolfDeskScopeTest` — the README's "What WolfDesk is, and what it is not": the only
+  dependency is JUnit, the main code imports only its own packages and the standard
+  library's `java.io`, `java.math`, `java.time` and `java.util`, and the demo is the only
+  program. Checked against three broken versions (a `java.net` import, a PostgreSQL
+  dependency, a second `main`): each was caught.
+
 ## The demo
 
 - `WolfDeskDemoTest` — the demo runs to the end: the deadline it prints is the one the
