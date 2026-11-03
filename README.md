@@ -59,8 +59,8 @@ passes.
 
 | Package | Pattern | Chapter | What it does |
 |---|---|---|---|
-| `billing` | Transaction script | 5 | Records opened tickets and charges a tenant per period with the volume discount |
-| `tenants` | Active record | 5 | A tenant with its ticket categories and supported products |
+| `billing` | Transaction script, layered | 5, 8 | Records opened tickets and charges a tenant per period with the volume discount |
+| `tenants` | Active record, layered with a service layer | 5, 8 | A tenant with its ticket categories and supported products |
 | `ticketing.domain` | Domain model | 6 | The `Ticket` aggregate: messages, assignment, escalation, reassignment, closing; its commands in `domain.commands`, its domain events in `domain.events` |
 | `ticketing.application` | Application service | 6 | `TicketService`, the outbox relay and its event publisher port |
 | `ticketing.eventsourced` | Event-sourced domain model | 7 | The same ticket, its state rebuilt from its events |
@@ -75,11 +75,24 @@ keeps and rollback throws away.
 
 Each module has the architecture its business logic needs (chapter 8):
 
-- `tenants` is layered: the `Tenant` active record depends on the concrete
-  `TenantsDatabase`, and the transaction scripts `RegisterTenant` and `AddSupportedProduct`
-  are its service layer.
-- `billing` is transaction scripts, which are a service layer already; they work on the
-  database through the `BillingDatabase` interface.
+- `billing` and `tenants` are layered, one package per layer, named with the book's
+  original terms (p. 124). Each layer depends only on the layer beneath it (p. 120):
+
+  | Package | Layer | Classes |
+  |---|---|---|
+  | `billing.presentation` | Presentation | `TicketingAnticorruptionLayer`: a subscription to ticketing's messages (p. 119) |
+  | `billing.businesslogic` | Business logic, and service layer | The transaction scripts `RecordTicketOpened` and `ChargeTenant`, and `VolumeDiscount` |
+  | `billing.dataaccess` | Data access | `BillingDatabase`, `ProductOwners`, the `Invoice` and `TenantId` they store, and their in-memory implementations |
+  | `tenants.service` | Service | The transaction scripts `RegisterTenant` and `AddSupportedProduct` |
+  | `tenants.businesslogic` | Business logic | The active records `Tenant` and `Product` |
+  | `tenants.dataaccess` | Data access | `TenantsDatabase` |
+
+  Billing has no separate service layer: a transaction script "essentially is a service
+  layer" (p. 124). Tenants needs one, because active records need external orchestration
+  (p. 124). Its scripts start, commit and roll back the transaction themselves, as the
+  book's `UserService.Create` does (p. 123), and otherwise work through the active records.
+  Tenants has no presentation layer: the tests and the demo call the service layer.
+  `LayeredArchitectureTest` checks each layer's imports.
 - `ticketing` is ports & adapters, one package per role. The business logic layer
   defines the ports (chapter 8, p. 127): `TicketRepository`, `Outbox` and
   `DepartmentRepository` are in `ticketing.domain`, and `ticketing.inmemory` holds the
@@ -91,7 +104,7 @@ Each module has the architecture its business logic needs (chapter 8):
 - `Message` stays in `ticketing.domain` with `Ticket`: its constructor and `markAsRead` are
   package-private, so a message changes only through its ticket.
 - The tags up to `stage-ch09` keep the earlier layout, with these classes directly in
-  `ticketing`; the decks quote the code at those tags.
+  `ticketing`, `billing` and `tenants`; the decks quote the code at those tags.
 - `ticketing.eventsourced` is ports & adapters too: `EventStore` is its port, and
   `InMemoryEventStore` in `ticketing.inmemory` its adapter.
 - `ticketing.readmodels` adds CQRS: the `Ticket` aggregate is the command execution model,
@@ -153,8 +166,8 @@ Chapter 9's patterns connect ticketing to billing (pp. 137–147):
   the private ones (assignment, messages, reassignment) inside. The messages carry only
   plain values, so consumers depend on nothing else in ticketing.
 - **Anticorruption layer.** Billing translates `TicketOpenedMessage` into its own model:
-  it finds the tenant from the ticket's product and calls `RecordTicketOpened`, which
-  counts a ticket once however often the message arrives.
+  it calls `RecordTicketOpened` with the ticket's product, and the script finds the tenant
+  that supports it and counts the ticket once however often the message arrives.
 
 ## The demo
 

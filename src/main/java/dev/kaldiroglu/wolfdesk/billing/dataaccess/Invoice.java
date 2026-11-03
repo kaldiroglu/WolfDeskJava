@@ -1,4 +1,4 @@
-package dev.kaldiroglu.wolfdesk.billing;
+package dev.kaldiroglu.wolfdesk.billing.dataaccess;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;

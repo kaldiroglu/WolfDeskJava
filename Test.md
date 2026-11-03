@@ -6,20 +6,32 @@ All tests are unit tests (JUnit 5), under `src/test/java`, run with `mvn test`. 
 the in-memory adapters, so they need no database. There are no integration or end-to-end
 tests: every adapter is in memory.
 
-## billing (transaction script)
+## billing (transaction script, layered)
 
 - `VolumeDiscountTest` — the Preface's thresholds: 0% up to 500 tickets, 10% from 501,
   20% from 751, 30% from 1,001.
 - `ChargeTenantTest` — the invoice counts only the period's tickets and applies the
   discount; charging a period twice returns the first invoice; a failure after the
   invoice is written rolls the invoice back.
-- `RecordTicketOpenedTest` — a retried call counts the ticket once (idempotency).
+- `RecordTicketOpenedTest` — a retried call counts the ticket once (idempotency), for the
+  tenant that supports the ticket's product.
 
-## tenants (active record)
+## tenants (active record, layered with a service layer)
 
 - `TenantTest` — a tenant is saved and found with its categories and products; a blank
   name is rejected; a failed script rolls back; rolled-back changes are not kept; a deleted
   tenant is gone.
+
+## The layers of billing and tenants
+
+- `LayeredArchitectureTest` — billing has the packages `presentation`, `businesslogic` and
+  `dataaccess`, tenants has `service`, `businesslogic` and `dataaccess`, and each imports
+  only the layer beneath it (billing's presentation also imports ticketing's published
+  language, the messages it receives). Tenants' service layer may import the data access
+  layer, and the test checks that it calls only `startTransaction`, `commit` and
+  `rollback` on it. Checked against three broken versions (`Invoice` importing
+  `VolumeDiscount`, the anticorruption layer importing `ProductOwners`, a service script
+  reading a table): each was caught.
 
 ## ticketing.domain and ticketing.application (domain model)
 

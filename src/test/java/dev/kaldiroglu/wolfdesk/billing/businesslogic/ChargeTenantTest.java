@@ -1,6 +1,8 @@
-package dev.kaldiroglu.wolfdesk.billing;
+package dev.kaldiroglu.wolfdesk.billing.businesslogic;
 
-import dev.kaldiroglu.wolfdesk.billing.inmemory.InMemoryBillingDatabase;
+import dev.kaldiroglu.wolfdesk.billing.dataaccess.InMemoryBillingDatabase;
+import dev.kaldiroglu.wolfdesk.billing.dataaccess.InMemoryProductOwners;
+import dev.kaldiroglu.wolfdesk.billing.dataaccess.TenantId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,8 +27,11 @@ class ChargeTenantTest {
     }
 
     private void openTickets(int count, Instant at) {
-        var record = new RecordTicketOpened(db);
-        for (int i = 0; i < count; i++) record.execute(tenant, UUID.randomUUID(), at);
+        var product = UUID.randomUUID();
+        var owners = new InMemoryProductOwners();
+        owners.add(product, tenant);
+        var record = new RecordTicketOpened(db, owners);
+        for (int i = 0; i < count; i++) record.execute(product, UUID.randomUUID(), at);
     }
 
     @Test

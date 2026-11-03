@@ -1,4 +1,6 @@
-package dev.kaldiroglu.wolfdesk.tenants;
+package dev.kaldiroglu.wolfdesk.tenants.businesslogic;
+
+import dev.kaldiroglu.wolfdesk.tenants.dataaccess.TenantsDatabase;
 
 import java.util.ArrayList;
 import java.util.List;

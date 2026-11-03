@@ -1,7 +1,4 @@
-package dev.kaldiroglu.wolfdesk.billing.inmemory;
-
-import dev.kaldiroglu.wolfdesk.billing.ProductOwners;
-import dev.kaldiroglu.wolfdesk.billing.TenantId;
+package dev.kaldiroglu.wolfdesk.billing.dataaccess;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package dev.kaldiroglu.wolfdesk.billing;
+package dev.kaldiroglu.wolfdesk.billing.dataaccess;
 
 import java.util.Objects;
 import java.util.UUID;

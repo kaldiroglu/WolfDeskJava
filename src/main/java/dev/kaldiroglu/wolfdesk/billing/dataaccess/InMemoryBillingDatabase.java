@@ -1,8 +1,4 @@
-package dev.kaldiroglu.wolfdesk.billing.inmemory;
-
-import dev.kaldiroglu.wolfdesk.billing.BillingDatabase;
-import dev.kaldiroglu.wolfdesk.billing.Invoice;
-import dev.kaldiroglu.wolfdesk.billing.TenantId;
+package dev.kaldiroglu.wolfdesk.billing.dataaccess;
 
 import java.math.BigDecimal;
 import java.time.Instant;

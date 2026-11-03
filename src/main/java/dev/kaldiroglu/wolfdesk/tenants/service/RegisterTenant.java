@@ -1,4 +1,7 @@
-package dev.kaldiroglu.wolfdesk.tenants;
+package dev.kaldiroglu.wolfdesk.tenants.service;
+
+import dev.kaldiroglu.wolfdesk.tenants.businesslogic.Tenant;
+import dev.kaldiroglu.wolfdesk.tenants.dataaccess.TenantsDatabase;
 
 import java.util.List;
 import java.util.UUID;

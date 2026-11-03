@@ -1,7 +1,9 @@
-package dev.kaldiroglu.wolfdesk.billing;
+package dev.kaldiroglu.wolfdesk.billing.presentation;
 
-import dev.kaldiroglu.wolfdesk.billing.inmemory.InMemoryBillingDatabase;
-import dev.kaldiroglu.wolfdesk.billing.inmemory.InMemoryProductOwners;
+import dev.kaldiroglu.wolfdesk.billing.businesslogic.RecordTicketOpened;
+import dev.kaldiroglu.wolfdesk.billing.dataaccess.InMemoryBillingDatabase;
+import dev.kaldiroglu.wolfdesk.billing.dataaccess.InMemoryProductOwners;
+import dev.kaldiroglu.wolfdesk.billing.dataaccess.TenantId;
 import dev.kaldiroglu.wolfdesk.ticketing.publishedlanguage.TicketClosedMessage;
 import dev.kaldiroglu.wolfdesk.ticketing.publishedlanguage.TicketOpenedMessage;
 import org.junit.jupiter.api.Test;
@@ -22,7 +24,7 @@ class TicketingAnticorruptionLayerTest {
     private final TenantId tenant = TenantId.random();
     private final UUID product = UUID.randomUUID();
     private final TicketingAnticorruptionLayer acl =
-            new TicketingAnticorruptionLayer(owners, new RecordTicketOpened(db));
+            new TicketingAnticorruptionLayer(new RecordTicketOpened(db, owners));
 
     TicketingAnticorruptionLayerTest() {
         owners.add(product, tenant);

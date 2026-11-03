@@ -1,4 +1,4 @@
-package dev.kaldiroglu.wolfdesk.billing;
+package dev.kaldiroglu.wolfdesk.billing.businesslogic;
 
 /**
  * The automatic volume discounts for monthly tickets: 10% for opening more than 500 tickets,

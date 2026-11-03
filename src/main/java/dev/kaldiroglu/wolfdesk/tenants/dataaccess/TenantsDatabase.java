@@ -1,4 +1,4 @@
-package dev.kaldiroglu.wolfdesk.tenants;
+package dev.kaldiroglu.wolfdesk.tenants.dataaccess;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,19 +8,19 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * The data access layer the active records are coupled to. It mimics three tables, tenants,
+ * The data access layer, the layer the active records depend on. It mimics three tables, tenants,
  * products and ticket categories, with maps. A transaction works on a copy of the tables;
  * commit keeps the copy, rollback throws it away.
  */
 public class TenantsDatabase {
 
-    record TenantRow(UUID id, String name) {
+    public record TenantRow(UUID id, String name) {
     }
 
-    record ProductRow(UUID id, UUID tenantId, String name) {
+    public record ProductRow(UUID id, UUID tenantId, String name) {
     }
 
-    record CategoryRow(UUID tenantId, String name) {
+    public record CategoryRow(UUID tenantId, String name) {
     }
 
     private static final class Tables {
@@ -58,34 +58,34 @@ public class TenantsDatabase {
         return working != null ? working : committed;
     }
 
-    Optional<TenantRow> selectTenant(UUID id) {
+    public Optional<TenantRow> selectTenant(UUID id) {
         return Optional.ofNullable(tables().tenants.get(id));
     }
 
-    List<ProductRow> selectProducts(UUID tenantId) {
+    public List<ProductRow> selectProducts(UUID tenantId) {
         return tables().products.values().stream()
                 .filter(p -> p.tenantId().equals(tenantId)).toList();
     }
 
-    List<CategoryRow> selectCategories(UUID tenantId) {
+    public List<CategoryRow> selectCategories(UUID tenantId) {
         return tables().categories.stream().filter(c -> c.tenantId().equals(tenantId)).toList();
     }
 
-    void upsertTenant(TenantRow row) {
+    public void upsertTenant(TenantRow row) {
         tables().tenants.put(row.id(), row);
     }
 
-    void replaceProducts(UUID tenantId, List<ProductRow> rows) {
+    public void replaceProducts(UUID tenantId, List<ProductRow> rows) {
         tables().products.values().removeIf(p -> p.tenantId().equals(tenantId));
         rows.forEach(r -> tables().products.put(r.id(), r));
     }
 
-    void replaceCategories(UUID tenantId, List<CategoryRow> rows) {
+    public void replaceCategories(UUID tenantId, List<CategoryRow> rows) {
         tables().categories.removeIf(c -> c.tenantId().equals(tenantId));
         tables().categories.addAll(rows);
     }
 
-    void deleteTenant(UUID tenantId) {
+    public void deleteTenant(UUID tenantId) {
         replaceProducts(tenantId, List.of());
         replaceCategories(tenantId, List.of());
         tables().tenants.remove(tenantId);

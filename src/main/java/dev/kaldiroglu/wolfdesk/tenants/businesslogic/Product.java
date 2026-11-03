@@ -1,4 +1,4 @@
-package dev.kaldiroglu.wolfdesk.tenants;
+package dev.kaldiroglu.wolfdesk.tenants.businesslogic;
 
 import java.util.UUID;
 

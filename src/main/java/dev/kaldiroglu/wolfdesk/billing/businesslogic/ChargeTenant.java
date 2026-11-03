@@ -1,4 +1,8 @@
-package dev.kaldiroglu.wolfdesk.billing;
+package dev.kaldiroglu.wolfdesk.billing.businesslogic;
+
+import dev.kaldiroglu.wolfdesk.billing.dataaccess.BillingDatabase;
+import dev.kaldiroglu.wolfdesk.billing.dataaccess.Invoice;
+import dev.kaldiroglu.wolfdesk.billing.dataaccess.TenantId;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

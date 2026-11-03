@@ -1,15 +1,15 @@
 package dev.kaldiroglu.wolfdesk.demo;
 
-import dev.kaldiroglu.wolfdesk.billing.ChargeTenant;
-import dev.kaldiroglu.wolfdesk.billing.Invoice;
-import dev.kaldiroglu.wolfdesk.billing.RecordTicketOpened;
-import dev.kaldiroglu.wolfdesk.billing.TenantId;
-import dev.kaldiroglu.wolfdesk.billing.TicketingAnticorruptionLayer;
-import dev.kaldiroglu.wolfdesk.billing.inmemory.InMemoryBillingDatabase;
-import dev.kaldiroglu.wolfdesk.billing.inmemory.InMemoryProductOwners;
-import dev.kaldiroglu.wolfdesk.tenants.AddSupportedProduct;
-import dev.kaldiroglu.wolfdesk.tenants.RegisterTenant;
-import dev.kaldiroglu.wolfdesk.tenants.TenantsDatabase;
+import dev.kaldiroglu.wolfdesk.billing.businesslogic.ChargeTenant;
+import dev.kaldiroglu.wolfdesk.billing.businesslogic.RecordTicketOpened;
+import dev.kaldiroglu.wolfdesk.billing.dataaccess.InMemoryBillingDatabase;
+import dev.kaldiroglu.wolfdesk.billing.dataaccess.InMemoryProductOwners;
+import dev.kaldiroglu.wolfdesk.billing.dataaccess.Invoice;
+import dev.kaldiroglu.wolfdesk.billing.dataaccess.TenantId;
+import dev.kaldiroglu.wolfdesk.billing.presentation.TicketingAnticorruptionLayer;
+import dev.kaldiroglu.wolfdesk.tenants.dataaccess.TenantsDatabase;
+import dev.kaldiroglu.wolfdesk.tenants.service.AddSupportedProduct;
+import dev.kaldiroglu.wolfdesk.tenants.service.RegisterTenant;
 import dev.kaldiroglu.wolfdesk.ticketing.application.ExecutionResult;
 import dev.kaldiroglu.wolfdesk.ticketing.application.OutboxRelay;
 import dev.kaldiroglu.wolfdesk.ticketing.application.TicketService;
@@ -91,7 +91,7 @@ public final class WolfDeskDemo {
 
         // The message bus: billing subscribes to ticketing's published language.
         var bus = new InMemoryEventPublisher();
-        bus.subscribe(new TicketingAnticorruptionLayer(owners, new RecordTicketOpened(billingDb))::on);
+        bus.subscribe(new TicketingAnticorruptionLayer(new RecordTicketOpened(billingDb, owners))::on);
 
         var at10 = service(tickets, timeframes, OPENED);
         TicketId ticket = at10.open(customer, List.of(new ProductId(productId)), "Cannot log in",

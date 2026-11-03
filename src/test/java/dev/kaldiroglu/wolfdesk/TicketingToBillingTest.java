@@ -1,10 +1,10 @@
 package dev.kaldiroglu.wolfdesk;
 
-import dev.kaldiroglu.wolfdesk.billing.RecordTicketOpened;
-import dev.kaldiroglu.wolfdesk.billing.TenantId;
-import dev.kaldiroglu.wolfdesk.billing.TicketingAnticorruptionLayer;
-import dev.kaldiroglu.wolfdesk.billing.inmemory.InMemoryBillingDatabase;
-import dev.kaldiroglu.wolfdesk.billing.inmemory.InMemoryProductOwners;
+import dev.kaldiroglu.wolfdesk.billing.businesslogic.RecordTicketOpened;
+import dev.kaldiroglu.wolfdesk.billing.dataaccess.InMemoryBillingDatabase;
+import dev.kaldiroglu.wolfdesk.billing.dataaccess.InMemoryProductOwners;
+import dev.kaldiroglu.wolfdesk.billing.dataaccess.TenantId;
+import dev.kaldiroglu.wolfdesk.billing.presentation.TicketingAnticorruptionLayer;
 import dev.kaldiroglu.wolfdesk.ticketing.application.OutboxRelay;
 import dev.kaldiroglu.wolfdesk.ticketing.application.TicketService;
 import dev.kaldiroglu.wolfdesk.ticketing.domain.Priority;
@@ -36,7 +36,7 @@ class TicketingToBillingTest {
         var tenant = TenantId.random();
         var product = ProductId.random();
         owners.add(product.value(), tenant);
-        bus.subscribe(new TicketingAnticorruptionLayer(owners, new RecordTicketOpened(billing))::on);
+        bus.subscribe(new TicketingAnticorruptionLayer(new RecordTicketOpened(billing, owners))::on);
         var service = new TicketService(tickets,
                 new ResponseTimeframeCalculationService(new InMemoryDepartmentRepository()),
                 Clock.fixed(Instant.parse("2026-10-20T12:00:00Z"), ZoneOffset.UTC));

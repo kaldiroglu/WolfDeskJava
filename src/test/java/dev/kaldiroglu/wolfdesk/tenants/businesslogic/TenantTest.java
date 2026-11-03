@@ -1,5 +1,8 @@
-package dev.kaldiroglu.wolfdesk.tenants;
+package dev.kaldiroglu.wolfdesk.tenants.businesslogic;
 
+import dev.kaldiroglu.wolfdesk.tenants.dataaccess.TenantsDatabase;
+import dev.kaldiroglu.wolfdesk.tenants.service.AddSupportedProduct;
+import dev.kaldiroglu.wolfdesk.tenants.service.RegisterTenant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
