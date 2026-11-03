@@ -27,7 +27,7 @@ passes.
 - One code base that shows each of the book's business logic and architectural patterns in
   the bounded context where the book would use it.
 - The same design in Java and C#, so participants work in their own language.
-- Tags by chapter (`stage-ch05` to `stage-ch08`, …), so a slide can point to
+- Tags by chapter (`stage-ch05` to `stage-ch09`, …), so a slide can point to
   the code as it stood at that chapter.
 
 ## Bounded contexts and their patterns
@@ -39,6 +39,7 @@ passes.
 | `ticketing` | Domain model | 6 | The `Ticket` aggregate: messages, assignment, escalation, reassignment, closing |
 | `ticketing.eventsourced` | Event-sourced domain model | 7 | The same ticket, its state rebuilt from its events |
 | `ticketing.readmodels` | CQRS | 8 | The agents' queues, projected from the saved tickets |
+| `ticketing.publishedlanguage` | Published language | 9 | The public messages ticketing publishes through its outbox |
 
 Each context has its own small model; they share no classes. Storage is in-memory
 adapters that mimic a database: a transaction works on a copy of the tables, which commit
@@ -63,6 +64,9 @@ Each module has the architecture its business logic needs (chapter 8):
   and `AgentQueueProjection` projects the saved tickets into each agent's queue. Each
   catch-up reads the tickets saved after its last checkpoint, which the repository stamps on
   every save, like a `rowversion` column. Resetting the checkpoint rebuilds the queues.
+- Ticketing and billing communicate through messages (chapter 9): ticketing's `Outbox` is a
+  port, `OutboxRelay` publishes through the `EventPublisher` port, and billing's
+  `TicketingAnticorruptionLayer` subscribes. `TicketingToBillingTest` wires the two.
 
 ## The ticket's rules
 
@@ -99,6 +103,24 @@ is persisted differs:
   a ticket.
 - `loadAt(id, version)` rebuilds a ticket as it was at an earlier version, and
   `TicketAnalysisProjection` projects the same events into a second model for analysis.
+
+## Publishing events: the outbox and the published language
+
+Chapter 9's patterns connect ticketing to billing (pp. 137–147):
+
+- **Outbox.** `TicketService` no longer publishes events. `InMemoryTicketRepository.save`
+  writes the ticket and its new domain events to the outbox in the same transaction, so
+  both are saved or neither is. A save rejected for concurrency writes no events.
+- **Relay.** `OutboxRelay` pulls the unpublished events, publishes them, and marks them as
+  published. If it stops between publishing and marking, the next run publishes the event
+  again: delivery is at least once.
+- **Published language.** The relay publishes `ticketing.publishedlanguage` messages, not
+  the ticket's domain events: `PublishedLanguageTranslator` translates the public events and leaves
+  the private ones (assignment, messages, reassignment) inside. The messages carry only
+  plain values, so consumers depend on nothing else in ticketing.
+- **Anticorruption layer.** Billing translates `TicketOpenedMessage` into its own model:
+  it finds the tenant from the ticket's product and calls `RecordTicketOpened`, which
+  counts a ticket once however often the message arrives.
 
 ## Credits
 

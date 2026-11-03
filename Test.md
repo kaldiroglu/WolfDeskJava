@@ -34,8 +34,9 @@ tests: every adapter is in memory.
   response time.
 - `InMemoryTicketRepositoryTest` — each save increments the version; a ticket changed since
   it was loaded is not saved; every save takes the next checkpoint, and a ticket saved
-  twice is one change at its latest checkpoint.
-- `TicketServiceTest` — events are published after the save; the agent's deadline comes
+  twice is one change at its latest checkpoint; a save keeps the ticket's new events in the
+  outbox; a rejected save keeps no events; a published event leaves the outbox.
+- `TicketServiceTest` — events are saved in the outbox with the ticket; the agent's deadline comes
   from the domain service; a concurrent change and a rejected escalation are reported as
   failures, not thrown.
 
@@ -66,6 +67,21 @@ version check removed; `TicketEscalated` not projected): both were caught.
 
 The projection tests were checked against two broken projections (closed tickets kept;
 checkpoint not stored): both were caught.
+
+## Publishing events (chapter 9)
+
+- `OutboxRelayTest` — only the public events are published, in the published language; an
+  event that failed to publish stays in the outbox for the next run; an event is published
+  again if the relay stops before marking it (at least once).
+- `TicketingAnticorruptionLayerTest` (billing) — an opened ticket is recorded for the
+  tenant of its product; a message delivered twice is counted once; a message billing does
+  not need is ignored.
+- `TicketingToBillingTest` — a ticket opened in ticketing is counted by billing once the
+  relay runs.
+
+These tests were checked against four broken versions (the relay never marking an event;
+the events written before the version check; billing's idempotency check removed; a private
+event published): all four were caught.
 
 The concurrency tests were checked against a deliberately broken repository (version check
 removed): two of them failed, as they should.

@@ -68,4 +68,39 @@ class InMemoryTicketRepositoryTest {
     void anUnknownTicketIsNotFound() {
         assertThrows(TicketNotFoundException.class, () -> repository.load(TicketId.random()));
     }
+
+    @Test
+    void aSaveKeepsTheTicketsNewEventsInTheOutbox() {
+        var ticket = newTicket();
+        repository.save(ticket);
+
+        var events = repository.unpublished().stream().map(OutboxRecord::event).toList();
+        assertEquals(1, events.size());
+        assertInstanceOf(TicketOpened.class, events.getFirst());
+    }
+
+    @Test
+    void aRejectedSaveKeepsNoEventsInTheOutbox() {
+        var customer = UserId.random();
+        var ticket = Ticket.open(TicketId.random(), customer, List.of(ProductId.random()),
+                "Cannot log in", Priority.LOW, NOW);
+        repository.save(ticket);
+        var first = repository.load(ticket.id());
+        var second = repository.load(ticket.id());
+        repository.save(first);
+        second.execute(new CloseTicket(customer, NOW));
+
+        assertThrows(ConcurrencyException.class, () -> repository.save(second));
+        assertEquals(1, repository.unpublished().size());
+    }
+
+    @Test
+    void aPublishedEventLeavesTheOutbox() {
+        repository.save(newTicket());
+        repository.save(newTicket());
+
+        repository.markPublished(repository.unpublished().getFirst().position());
+
+        assertEquals(List.of(2L), repository.unpublished().stream().map(OutboxRecord::position).toList());
+    }
 }

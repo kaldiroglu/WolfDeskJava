@@ -1,7 +1,6 @@
 package dev.kaldiroglu.wolfdesk.ticketing;
 
 import dev.kaldiroglu.wolfdesk.ticketing.inmemory.InMemoryDepartmentRepository;
-import dev.kaldiroglu.wolfdesk.ticketing.inmemory.InMemoryEventPublisher;
 import dev.kaldiroglu.wolfdesk.ticketing.inmemory.InMemoryTicketRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,13 +21,11 @@ class TicketServiceTest {
     private final UserId customer = UserId.random();
     private final UserId agent = UserId.random();
     private InMemoryTicketRepository tickets;
-    private InMemoryEventPublisher publisher;
     private ResponseTimeframeCalculationService timeframes;
 
     @BeforeEach
     void setUp() {
         tickets = new InMemoryTicketRepository();
-        publisher = new InMemoryEventPublisher();
         var departments = new InMemoryDepartmentRepository();
         departments.setPolicy(agent, new DepartmentPolicy(Map.of(Priority.HIGH, Duration.ofHours(2)),
                 0.5, Duration.ofDays(1)));
@@ -38,7 +35,7 @@ class TicketServiceTest {
     }
 
     private TicketService serviceAt(Instant now, TicketRepository repository) {
-        return new TicketService(repository, timeframes, publisher, Clock.fixed(now, ZoneOffset.UTC));
+        return new TicketService(repository, timeframes, Clock.fixed(now, ZoneOffset.UTC));
     }
 
     private TicketId openAndAssign() {
@@ -49,10 +46,10 @@ class TicketServiceTest {
     }
 
     @Test
-    void theEventsArePublishedAfterTheTicketIsSaved() {
+    void theEventsAreSavedInTheOutboxWithTheTicket() {
         openAndAssign();
 
-        var types = publisher.published().stream().map(e -> e.getClass().getSimpleName()).toList();
+        var types = tickets.unpublished().stream().map(r -> r.event().getClass().getSimpleName()).toList();
         assertEquals(List.of("TicketOpened", "TicketAssigned"), types);
     }
 
@@ -60,7 +57,7 @@ class TicketServiceTest {
     void theAgentGetsADeadlineFromTheDomainService() {
         var id = openAndAssign();
 
-        var assigned = (TicketAssigned) publisher.published().get(1);
+        var assigned = (TicketAssigned) tickets.unpublished().get(1).event();
         assertEquals(id, assigned.ticketId());
         assertEquals(Instant.parse("2026-10-28T12:00:00Z"), assigned.responseDeadline());
     }

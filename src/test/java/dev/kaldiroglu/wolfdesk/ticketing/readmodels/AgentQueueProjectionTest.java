@@ -9,7 +9,6 @@ import dev.kaldiroglu.wolfdesk.ticketing.TicketId;
 import dev.kaldiroglu.wolfdesk.ticketing.TicketService;
 import dev.kaldiroglu.wolfdesk.ticketing.UserId;
 import dev.kaldiroglu.wolfdesk.ticketing.inmemory.InMemoryDepartmentRepository;
-import dev.kaldiroglu.wolfdesk.ticketing.inmemory.InMemoryEventPublisher;
 import dev.kaldiroglu.wolfdesk.ticketing.inmemory.InMemoryTicketRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,7 +47,7 @@ class AgentQueueProjectionTest {
     }
 
     private TicketService serviceAt(Instant now) {
-        return new TicketService(tickets, timeframes, new InMemoryEventPublisher(),
+        return new TicketService(tickets, timeframes,
                 Clock.fixed(now, ZoneOffset.UTC));
     }
 
