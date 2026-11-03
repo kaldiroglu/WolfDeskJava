@@ -1,6 +1,6 @@
 package dev.kaldiroglu.wolfdesk.ticketing.readmodels;
 
-import dev.kaldiroglu.wolfdesk.ticketing.UserId;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.UserId;
 
 import java.util.List;
 

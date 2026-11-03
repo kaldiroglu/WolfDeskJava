@@ -1,7 +1,7 @@
 package dev.kaldiroglu.wolfdesk.ticketing.eventsourced;
 
-import dev.kaldiroglu.wolfdesk.ticketing.TicketId;
-import dev.kaldiroglu.wolfdesk.ticketing.TicketStatus;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.TicketId;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.TicketStatus;
 import dev.kaldiroglu.wolfdesk.ticketing.eventsourced.TicketEvent.*;
 
 import java.util.List;

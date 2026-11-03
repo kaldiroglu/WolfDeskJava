@@ -1,7 +1,7 @@
 package dev.kaldiroglu.wolfdesk.ticketing.inmemory;
 
-import dev.kaldiroglu.wolfdesk.ticketing.ConcurrencyException;
-import dev.kaldiroglu.wolfdesk.ticketing.TicketId;
+import dev.kaldiroglu.wolfdesk.ticketing.application.ConcurrencyException;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.TicketId;
 import dev.kaldiroglu.wolfdesk.ticketing.eventsourced.EventStore;
 import dev.kaldiroglu.wolfdesk.ticketing.eventsourced.TicketEvent;
 

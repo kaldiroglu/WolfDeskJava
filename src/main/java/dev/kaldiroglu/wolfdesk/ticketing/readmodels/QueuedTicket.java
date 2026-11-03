@@ -1,7 +1,7 @@
 package dev.kaldiroglu.wolfdesk.ticketing.readmodels;
 
-import dev.kaldiroglu.wolfdesk.ticketing.Priority;
-import dev.kaldiroglu.wolfdesk.ticketing.TicketId;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.Priority;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.TicketId;
 
 import java.time.Instant;
 

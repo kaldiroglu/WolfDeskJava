@@ -1,13 +1,13 @@
 package dev.kaldiroglu.wolfdesk.ticketing.readmodels;
 
-import dev.kaldiroglu.wolfdesk.ticketing.DepartmentPolicy;
-import dev.kaldiroglu.wolfdesk.ticketing.Priority;
-import dev.kaldiroglu.wolfdesk.ticketing.ProductId;
-import dev.kaldiroglu.wolfdesk.ticketing.ResponseTimeframeCalculationService;
-import dev.kaldiroglu.wolfdesk.ticketing.Shift;
-import dev.kaldiroglu.wolfdesk.ticketing.TicketId;
-import dev.kaldiroglu.wolfdesk.ticketing.TicketService;
-import dev.kaldiroglu.wolfdesk.ticketing.UserId;
+import dev.kaldiroglu.wolfdesk.ticketing.application.TicketService;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.DepartmentPolicy;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.Priority;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.ProductId;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.ResponseTimeframeCalculationService;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.Shift;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.TicketId;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.UserId;
 import dev.kaldiroglu.wolfdesk.ticketing.inmemory.InMemoryDepartmentRepository;
 import dev.kaldiroglu.wolfdesk.ticketing.inmemory.InMemoryTicketRepository;
 import org.junit.jupiter.api.BeforeEach;

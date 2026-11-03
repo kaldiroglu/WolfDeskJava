@@ -1,14 +1,14 @@
 package dev.kaldiroglu.wolfdesk.ticketing.eventsourced;
 
-import dev.kaldiroglu.wolfdesk.ticketing.DepartmentPolicy;
-import dev.kaldiroglu.wolfdesk.ticketing.ExecutionResult;
-import dev.kaldiroglu.wolfdesk.ticketing.Priority;
-import dev.kaldiroglu.wolfdesk.ticketing.ProductId;
-import dev.kaldiroglu.wolfdesk.ticketing.ResponseTimeframeCalculationService;
-import dev.kaldiroglu.wolfdesk.ticketing.Shift;
-import dev.kaldiroglu.wolfdesk.ticketing.TicketId;
-import dev.kaldiroglu.wolfdesk.ticketing.TicketStatus;
-import dev.kaldiroglu.wolfdesk.ticketing.UserId;
+import dev.kaldiroglu.wolfdesk.ticketing.application.ExecutionResult;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.DepartmentPolicy;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.Priority;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.ProductId;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.ResponseTimeframeCalculationService;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.Shift;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.TicketId;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.TicketStatus;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.UserId;
 import dev.kaldiroglu.wolfdesk.ticketing.eventsourced.TicketEvent.*;
 import dev.kaldiroglu.wolfdesk.ticketing.inmemory.InMemoryDepartmentRepository;
 import dev.kaldiroglu.wolfdesk.ticketing.inmemory.InMemoryEventStore;

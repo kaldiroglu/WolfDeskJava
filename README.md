@@ -36,7 +36,8 @@ passes.
 |---|---|---|---|
 | `billing` | Transaction script | 5 | Records opened tickets and charges a tenant per period with the volume discount |
 | `tenants` | Active record | 5 | A tenant with its ticket categories and supported products |
-| `ticketing` | Domain model | 6 | The `Ticket` aggregate: messages, assignment, escalation, reassignment, closing |
+| `ticketing.domain` | Domain model | 6 | The `Ticket` aggregate: messages, assignment, escalation, reassignment, closing; its commands in `domain.commands`, its domain events in `domain.events` |
+| `ticketing.application` | Application service | 6 | `TicketService`, the ports it needs, and the outbox relay |
 | `ticketing.eventsourced` | Event-sourced domain model | 7 | The same ticket, its state rebuilt from its events |
 | `ticketing.readmodels` | CQRS | 8 | The agents' queues, projected from the saved tickets |
 | `ticketing.publishedlanguage` | Published language | 9 | The public messages ticketing publishes through its outbox |
@@ -54,10 +55,16 @@ Each module has the architecture its business logic needs (chapter 8):
   are its service layer.
 - `billing` is transaction scripts, which are a service layer already; they work on the
   database through the `BillingDatabase` interface.
-- `ticketing` is ports & adapters. The domain model and the application service
-  (`TicketService`) define the ports they need — `TicketRepository`, `EventPublisher`,
-  `DepartmentRepository` — and `ticketing.inmemory` holds the adapters. Nothing in
-  `ticketing` imports an adapter.
+- `ticketing` is ports & adapters, one package per role. The domain model
+  (`ticketing.domain`) and the application service (`ticketing.application`) define the
+  ports they need — `DepartmentRepository` in the domain, used by its domain service;
+  `TicketRepository`, `Outbox` and `EventPublisher` in the application layer — and
+  `ticketing.inmemory` holds the adapters. No production code outside it imports an
+  adapter, and the domain imports nothing from the application layer.
+- `Message` stays in `ticketing.domain` with `Ticket`: its constructor and `markAsRead` are
+  package-private, so a message changes only through its ticket.
+- The tags up to `stage-ch09` keep the earlier layout, with these classes directly in
+  `ticketing`; the decks quote the code at those tags.
 - `ticketing.eventsourced` is ports & adapters too: `EventStore` is its port, and
   `InMemoryEventStore` in `ticketing.inmemory` its adapter.
 - `ticketing.readmodels` adds CQRS: the `Ticket` aggregate is the command execution model,

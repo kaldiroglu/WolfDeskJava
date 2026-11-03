@@ -1,10 +1,10 @@
 package dev.kaldiroglu.wolfdesk.ticketing.eventsourced;
 
-import dev.kaldiroglu.wolfdesk.ticketing.ConcurrencyException;
-import dev.kaldiroglu.wolfdesk.ticketing.Priority;
-import dev.kaldiroglu.wolfdesk.ticketing.ProductId;
-import dev.kaldiroglu.wolfdesk.ticketing.TicketId;
-import dev.kaldiroglu.wolfdesk.ticketing.UserId;
+import dev.kaldiroglu.wolfdesk.ticketing.application.ConcurrencyException;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.Priority;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.ProductId;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.TicketId;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.UserId;
 import dev.kaldiroglu.wolfdesk.ticketing.eventsourced.TicketEvent.*;
 import dev.kaldiroglu.wolfdesk.ticketing.inmemory.InMemoryEventStore;
 import org.junit.jupiter.api.Test;

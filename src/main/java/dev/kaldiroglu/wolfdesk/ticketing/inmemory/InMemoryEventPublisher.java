@@ -1,6 +1,6 @@
 package dev.kaldiroglu.wolfdesk.ticketing.inmemory;
 
-import dev.kaldiroglu.wolfdesk.ticketing.EventPublisher;
+import dev.kaldiroglu.wolfdesk.ticketing.application.EventPublisher;
 import dev.kaldiroglu.wolfdesk.ticketing.publishedlanguage.TicketingMessage;
 
 import java.util.ArrayList;

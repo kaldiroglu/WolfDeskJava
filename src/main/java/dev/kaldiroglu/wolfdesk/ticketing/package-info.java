@@ -1,9 +1,15 @@
 /**
  * Ticketing: the life of a support ticket, from opening to closing.
  *
- * <p>Implemented with the domain model pattern (chapter 6). {@link Ticket} is an aggregate:
- * its state changes only through its commands, and each change runs in one transaction.
- * The ticket's rules on escalation and reassignment follow the book's listings 06-13 and
- * 06-17 and the ticket policies of the TypeScript {@code eventually-wolfdesk}.
+ * <p>Ports and adapters (chapter 8), one package per role:
+ * <ul>
+ *   <li>{@code domain}: the ticket aggregate and its value objects, with its commands in
+ *       {@code domain.commands} and its domain events in {@code domain.events}.</li>
+ *   <li>{@code application}: the application service and the ports it needs.</li>
+ *   <li>{@code inmemory}: the adapters. Nothing outside it imports it.</li>
+ *   <li>{@code publishedlanguage}: the public messages for other bounded contexts.</li>
+ *   <li>{@code eventsourced} and {@code readmodels}: chapter 7's event-sourced ticket and
+ *       the CQRS read model.</li>
+ * </ul>
  */
 package dev.kaldiroglu.wolfdesk.ticketing;

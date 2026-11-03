@@ -1,9 +1,9 @@
 package dev.kaldiroglu.wolfdesk.ticketing.readmodels;
 
-import dev.kaldiroglu.wolfdesk.ticketing.TicketId;
-import dev.kaldiroglu.wolfdesk.ticketing.TicketSnapshot;
-import dev.kaldiroglu.wolfdesk.ticketing.TicketStatus;
-import dev.kaldiroglu.wolfdesk.ticketing.UserId;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.TicketId;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.TicketSnapshot;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.TicketStatus;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.UserId;
 
 import java.util.Comparator;
 import java.util.HashMap;

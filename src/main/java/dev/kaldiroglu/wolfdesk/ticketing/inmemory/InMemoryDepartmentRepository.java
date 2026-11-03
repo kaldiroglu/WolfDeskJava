@@ -1,9 +1,9 @@
 package dev.kaldiroglu.wolfdesk.ticketing.inmemory;
 
-import dev.kaldiroglu.wolfdesk.ticketing.DepartmentPolicy;
-import dev.kaldiroglu.wolfdesk.ticketing.DepartmentRepository;
-import dev.kaldiroglu.wolfdesk.ticketing.Shift;
-import dev.kaldiroglu.wolfdesk.ticketing.UserId;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.DepartmentPolicy;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.DepartmentRepository;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.Shift;
+import dev.kaldiroglu.wolfdesk.ticketing.domain.UserId;
 
 import java.time.Instant;
 import java.util.ArrayList;

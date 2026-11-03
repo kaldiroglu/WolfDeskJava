@@ -21,7 +21,7 @@ tests: every adapter is in memory.
   name is rejected; a failed script rolls back; rolled-back changes are not kept; a deleted
   tenant is gone.
 
-## ticketing (domain model)
+## ticketing.domain and ticketing.application (domain model)
 
 - `ValueObjectTest` — ids are equal by value and never empty; a response timeframe ends
   after it starts and reports the share of time left.
@@ -32,7 +32,7 @@ tests: every adapter is in memory.
 - `ResponseTimeframeCalculationServiceTest` — the domain service counts working time in
   shifts only, applies the escalation factor, and fails when the shifts do not cover the
   response time.
-- `InMemoryTicketRepositoryTest` — each save increments the version; a ticket changed since
+- `InMemoryTicketRepositoryTest` (in `ticketing.inmemory`) — each save increments the version; a ticket changed since
   it was loaded is not saved; every save takes the next checkpoint, and a ticket saved
   twice is one change at its latest checkpoint; a save keeps the ticket's new events in the
   outbox; a rejected save keeps no events; a published event leaves the outbox.
